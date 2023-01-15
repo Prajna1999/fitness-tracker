@@ -1,6 +1,7 @@
 const express=require('express');
 const bodyParser=require('body-parser');
 const workoutRoutes=require('./routes/workouts');
+const  userRoutes=require('./routes/user'); 
 const cors=require('cors')
 const mongoose=require('mongoose');
 require('dotenv').config();
@@ -23,6 +24,7 @@ app.use((req,res,next)=>{
 
 //routes realtive path.
 app.use('/api/workouts',workoutRoutes)
+app.use('/api/user', userRoutes)
 
 //listen for requests only when we are connected to the db.
 const PORT=process.env.PORT||5001
