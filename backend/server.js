@@ -1,7 +1,7 @@
 const express=require('express')
 const mongoose=require('mongoose');
 const workoutRoutes=require('./routes/workouts')
-
+const cors=require('cors')
 require('dotenv').config()
 
 
@@ -13,12 +13,18 @@ const PORT=5001||process.env.PORT
 //express app
 const app=express()
 
+//cors
+app.use(cors({
+    origin:"http://127.0.0.1:5173"
+}))
+
 //middle ware for POST requests handling
 app.use(express.json())
 
 //middleware, logging the path everytime
 //client makes a request on the FE
 app.use((req,res,next)=>{
+    
     console.log(req.path, req.method)
     next()
 })

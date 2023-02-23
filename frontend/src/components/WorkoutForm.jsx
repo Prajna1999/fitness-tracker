@@ -1,95 +1,68 @@
-import React, { useReducer, useState } from "react";
-import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+import React, {useState} from "react";
 
 function WorkoutForm() {
-  //dispatch function destructure.
-  const { dispatch } = useWorkoutsContext();
-  //reduce function
-  const [workout, updateWorkout] = useReducer(
-    (prev, next) => {
-      const newWorkout = { ...prev, ...next };
+  const [title, setTitle] = useState("");
+  const [load, setLoad] = useState("");
+  const [reps, setReps] = useState("");
+  const [error, setError]=useState(null)
+  const handleSubmit=async(e)=>{
+    e.preventDefault()
 
-      //Ensure that the length of the title is never more than 10chars.
-      if (newWorkout.title.length > 40) {
-        newWorkout.title = newWorkout.title.substring(0, 10);
+    const workout={title, load, reps}
+
+    //fetch api to send a POST request
+    const response=await fetch('http://localhost:5001/api/workouts', {
+      method:'POST',
+      body:JSON.stringify(workout),
+      headers:{
+        'Content-Type':'application/json'
       }
-      return newWorkout;
-    },
 
-    //initial state
-    { title: "", load: "", reps: "" }
-  );
+    })
+    //getting the JSOn back ans storing inside a function
 
-  const [error, setError] = useState(null);
-  //create a state for empty fields array
-  //to be populated if we got an error
-  const [emptyFields, setEmptyFields]=useState([])
+    const json=await response.json()
 
-  //form submit handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    //  const workout={title, load, reps}
-
-    //POST request to the server
-    const response = await fetch(import.meta.env.VITE_APP_BASE_URL, {
-      method: "POST",
-      body: JSON.stringify(workout),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    //after the POST request.
-    const data = await response.json();
-    //error handling
-    if (!response.ok) {
-      setError(data.error);
-      setEmptyFields(data.emptyFields)
+    if(!response.ok){
+        setError(json.error)
     }
-    //on success
-    if (response.ok) {
-      //add to the global context state
-      //newly created workout
-      //ONLY after the db registers a successful POST
-      //requestand status code is 200
-      setEmptyFields([])//not to see the errormessages on screen
-      setError(null) //this line was missing
-      console.log("new workout created", data);
-      updateWorkout({title: '', load:'', reps:''})
-     
-      dispatch({ type: "CREATE_WORKOUT", payload: data });
-    }
-  };
 
+    if(response.ok){
+      setTitle('')
+      setLoad('')
+      setReps('')
+      setError(null)
+      console.log('new Workout Added', json)
+    }
+  }
   return (
     <form className="create" onSubmit={handleSubmit}>
-      <h3>Add a new workout</h3>
+      <h3>Add a new Workout</h3>
 
       <label>Excercise Title:</label>
+
       <input
         type="text"
-        onChange={(e) => updateWorkout({ title: e.target.value })}
-        value={workout.title}
-        className={emptyFields.includes('title')?'error':''}
+        onChange={(e) => setTitle(e.target.value)}
+        value={title}
       />
 
-      <label>Load(in kg):</label>
+      <label>Load (in kg):</label>
+
       <input
         type="number"
-        onChange={(e) => updateWorkout({ load: e.target.value })}
-        value={workout.load}
-        className={emptyFields.includes('load')?'error':''}
+        onChange={(e) => setLoad(e.target.value)}
+        value={load}
       />
 
-      <label>Reps: </label>
+      <label>Reps:</label>
+
       <input
         type="number"
-        onChange={(e) => updateWorkout({ reps: e.target.value })}
-        value={workout.reps}
-        className={emptyFields.includes('reps')?'error':''}
+        onChange={(e) => setReps(e.target.value)}
+        value={reps}
       />
-
-      <button> Add Workout</button>
+      <button type="submit">Add Workout</button>
       {error && <div className="error">{error}</div>}
     </form>
   );

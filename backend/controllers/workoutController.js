@@ -93,6 +93,7 @@ const deleteWorkout=async(req,res)=>{
     }
 
     //returns the docuemnts before updating
+    //send back to the client in json data format.
     res.status(200).json(workout)
     }
 
