@@ -6,9 +6,11 @@ import { WorkoutsContextProvider } from './context/WorkoutContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    {/* wrap the context provider in the App component */}
+    {/* All components will have access to the WorkoutsContext */}
     <WorkoutsContextProvider>
       
-    <App />
+        <App />
     </WorkoutsContextProvider>
   </React.StrictMode>,
 )

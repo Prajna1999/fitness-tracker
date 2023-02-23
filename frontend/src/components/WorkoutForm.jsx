@@ -1,6 +1,12 @@
 import React, {useState} from "react";
 
+import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+
 function WorkoutForm() {
+
+  const {dispatch}=useWorkoutsContext()
+
+
   const [title, setTitle] = useState("");
   const [load, setLoad] = useState("");
   const [reps, setReps] = useState("");
@@ -33,6 +39,13 @@ function WorkoutForm() {
       setReps('')
       setError(null)
       console.log('new Workout Added', json)
+
+      // dispatch an action if the POST req is a success.
+      dispatch({
+        type:'CREATE_WORKOUT',
+
+        payload:json
+      })
     }
   }
   return (

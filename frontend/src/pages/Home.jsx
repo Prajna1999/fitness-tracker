@@ -1,4 +1,4 @@
-import  {useEffect, useState} from 'react'
+import  {useEffect} from 'react'
 import{WorkoutDetails,WorkoutForm }  from '../components/index'
 
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
@@ -8,7 +8,7 @@ import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 
 
 function Home() {
-  const [workouts, setWorkouts]=useState(null)
+  const {workouts, dispatch}=useWorkoutsContext()
     
   //fire the function when the component first renders
     useEffect(()=>{
@@ -18,8 +18,14 @@ function Home() {
         const json=await response.json()
 
         if(response.ok){
-          //setstate of the worksouts
-          setWorkouts(json)
+          //dispatch an action: SET_WORKOUTS
+          //payload as the json data
+          //fetched from the server
+          dispatch({
+            type:'SET_WORKOUTS',
+            payload:json
+          })
+          
         }
       }
 
