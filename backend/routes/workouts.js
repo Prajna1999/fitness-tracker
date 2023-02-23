@@ -1,22 +1,21 @@
-const express = require("express");
-const {createWorkout, getWorkouts, getSingleWorkout, deleteWorkout, updateWorkout}=require("../controllers/workoutController");
-const { update } = require("../models/workoutSchema");
-const router = express.Router();
+const express=require('express')
+
+const router=express.Router()
 
 
-//attache a handler  to GET all workouts
-router.get("/", getWorkouts);
+//fires the function when the client requests the path
+// /api/workouts/ relative path
+router.get('/', (req,res)=>{
 
-//GET a single workout
-router.get("/:id", getSingleWorkout);
+    res.json({mssg:"It works"})
+    // console.log("it works")
+})
 
-//POST a new workout.
-router.post("/",createWorkout );
+//this fires when we make a request to
+// /api/workouts/hello relative path.
+router.get('/test', (req,res)=>{
+    res.json({mssg:"This too"})
+})
 
-//DELETE a workout
-router.delete("/:id", deleteWorkout);
 
-//UPDATE a workout.
-router.patch("/:id",updateWorkout);
-
-module.exports = router;
+module.exports=router;
