@@ -1,124 +1,106 @@
-const Workout = require("../models/workoutSchema.js");
-const mongoose=require('mongoose');
+const Workout=require('../models/workoutSchema')
+const mongoose=require('mongoose')
 //get all workouts
+
 const getWorkouts=async(req,res)=>{
-    //getting all the data from the db sorted by date and time.
-    const workouts=await Workout.find({}).sort({createdAt:-1});
-    //sending back the data to the frontend after
-    //200 status code
+    //grab all documents in reverse chronological order
+    const workouts= await Workout.find({}).sort({createdAt:-1})
+
+    //sending back to the client as an array of objects
     res.status(200).json(workouts)
 }
 
 
+//get a single workouts
+const getWorkout=async(req,res)=>{
+    //grab the id property from req.params object
+    const {id}=req.params
 
-//get a single workout
-
-const  getSingleWorkout=async(req,res)=>{
-
-    const {id}=req.params;
-
-    //validate whether the document with the id exists in the db or not.
+    //if it's not a valid id
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error:'No Such Workout exist.'})
+        return res.status(404).json({error: 'No such workout exists.'})
     }
 
-    const workout=await Workout.findById(id);
-
-    // if the id doesnot exist.
+    const workout= await Workout.findById(id)
 
     if(!workout){
-        return res.status(404).json({error:'No such content'})
+        //return 
+        return res.status(404).json({error:'No such workout'})
+
     }
 
-    //send to the frontend;
-    return res.status(200).json(workout)
+    res.status(200).json(workout)
 
-    
+    // res.status(200).json({mssg:"Req successful"})
 
 }
 
-
-
 //create a new workout
 const createWorkout=async(req,res)=>{
-    const { title, load, reps } = req.body;
 
-    let emptyFields=[]
-    if(!title){
-        emptyFields.push('title')
-    }
-    if(!load){
-        emptyFields.push('load')
-    }
+    const {title, reps, load}=req.body
 
-    if(!reps){
-        emptyFields.push('reps')
-    }
+    try{
+        const workout=await Workout.create({
+            title, reps,load
+        })
 
-    if(emptyFields.length>0){
-        return res.status(400).json({error:'Please fill in all the fields',emptyFields})
-    }
-    //asynchronously add doc to db
-  
-    try {
-      const workout = await Workout.create({ title, load, reps });
-  
-      res.status(200).json(workout);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
+        res.status(200).json(workout)
+    }catch(error){
+        res.status(400). json({error: error.messgae})
     }
 }
 
 
 //delete a workout
 const deleteWorkout=async(req,res)=>{
-    const {id}=req.params;
+    const {id}=req.params
 
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error:'No such workout exists'});
+        return res.status(404).json({error: 'No such workout exists.'})
     }
 
-    //find the workout by the _id field in the document.
-    const workout=await Workout.findOneAndDelete({_id: id})
-    //validation
+    //delete the document
+    const workout=await Workout.findOneAndDelete({_id:id})
+
+    //check if we have a valid workout or not
     if(!workout){
-        return res.status(404).json({error:'Workout does not exist'})
+        return res.status(404).json({error:"No Such Workout!"})
     }
 
+    //send to the client
     res.status(200).json(workout)
 }
 
 
-
 //update a workout
-const updateWorkout=async(req,res)=>{
-    const {id}=req.params
+    const updateWorkout=async(req,res)=>{
+        const {id}=req.params
 
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(200).json({error:'Workout not found'})
+        return res.status(404).json({error: 'No such workout exists.'})
     }
 
-    const workout=await Workout.findOneAndUpdate({_id: id}, {
-        //spread the property ofthe updated request body
+    const workout=await Workout.findOneAndUpdate({_id:id}, {
+        //whatever properties on the req. body 
+        //will be updated
         ...req.body
     })
 
     if(!workout){
-        return res.status(404).json({error:'NoSuch Workout'})
+        return res.status(404).json({error:"No Such Workout Exists"})
+
     }
 
-    return res.status(200).json(workout)
-}
+    //returns the docuemnts before updating
+    res.status(200).json(workout)
+    }
 
-
-
-
-
-//export the controllers
+// export
 module.exports={
     createWorkout,
     getWorkouts,
-    getSingleWorkout,
-    deleteWorkout,
-    updateWorkout
+    getWorkout,
+    updateWorkout,
+    deleteWorkout
 }
