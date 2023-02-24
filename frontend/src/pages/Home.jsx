@@ -30,7 +30,7 @@ function Home() {
       }
 
       fetchWorkouts()
-    }, [])
+    }, [dispatch])
 
 
   return (
