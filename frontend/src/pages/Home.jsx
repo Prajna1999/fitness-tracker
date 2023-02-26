@@ -3,17 +3,21 @@ import{WorkoutDetails,WorkoutForm }  from '../components/index'
 
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 
-
+import { useAuthContext } from '../hooks/useAuthContext'
 
 
 
 function Home() {
   const {workouts, dispatch}=useWorkoutsContext()
-    
+    const {user}=useAuthContext()
   //fire the function when the component first renders
     useEffect(()=>{
       const fetchWorkouts=async()=>{
-        const response=await fetch('http://localhost:5001/api/workouts')
+        const response=await fetch('http://localhost:5001/api/workouts', {
+          headers:{
+            'Authorization':`Bearer ${user.token}`
+          }
+        })
         //each object is a workout
         const json=await response.json()
 
@@ -28,9 +32,13 @@ function Home() {
           
         }
       }
+      //fetch only if we have a value for the user
+      //i.e the user is authorized to make a request
+      if(user){
 
-      fetchWorkouts()
-    }, [dispatch])
+        fetchWorkouts()
+      }
+    }, [dispatch, user])
 
 
   return (
