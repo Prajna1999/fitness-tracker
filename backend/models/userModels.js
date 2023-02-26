@@ -71,7 +71,7 @@ userSchema.statics.login=async function(email,password){
         throw Error('Incorrect Email')
     }
 
-    //match the passsword.(hashed and ptext) boolean
+    //match the passsword.(hashed and plaint text) boolean
     const match=await bcrypt.compare(password, user.password)
 
     if(!match){

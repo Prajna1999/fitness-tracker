@@ -1,5 +1,7 @@
 const express=require('express')
 
+const requireAuth=require('../middleware/requireAuth')
+
 const {
     createWorkout,
     getWorkout,
@@ -10,6 +12,11 @@ const {
 
 
 const router=express.Router()
+
+
+//fire the middleware function
+//to protect all the workout routes
+router.use(requireAuth)
 
 //fires the function when the client requests the path
 // /api/workouts/ relative path
